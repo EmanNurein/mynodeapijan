@@ -6,11 +6,11 @@ const dotenv = require('dotenv');
 dotenv.config()
 let port = process.env.PORT || 8230;
 //const mongoUrl = process.env.mongoUrl;
-//const mongoUrl = "mongodb://localhost:27017";
-const mongoUrl = "mongodb+srv://eman:eman1234@cluster0.bvz0d.mongodb.net/emaapharmacy?retryWrites=true&w=majority";
+const mongoUrl = "mongodb://localhost:27017";
+//const mongoUrl = "mongodb+srv://eman:eman1234@cluster0.bvz0d.mongodb.net/emaapharmacy?retryWrites=true&w=majority";
 const bodyParser = require('body-parser');
 const cors = require('cors');
-// const token = "8fbf8tyyt87378";
+// const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
 
 
 
@@ -36,7 +36,7 @@ const cors = require('cors');
            
         })
 
-    //Pharmacy
+    //Pharmacy 
         app.get('/pharmacy/',(req,res) => {
         // let id = req.params.id;
         // let id  = req.query.id
@@ -56,6 +56,20 @@ const cors = require('cors');
         })
     })
 
+    //Pharmacy on basis of products
+    app.get('/pharmacy/',(req,res) => {
+        // let id = req.params.id;
+        // let id  = req.query.id
+        // console.log(">>>id",id)
+        
+        let productId = Number(req.query.product_id)
+
+        db.collection('pharmacy').find(query).toArray((err,result) => {
+            if(err) throw err;
+            res.send(result)
+        })
+    })
+    
 
     //categoryTypes
      app.get('/categorytype',(req,res) => {
@@ -70,7 +84,7 @@ const cors = require('cors');
 
      //PharmacyDetails
         app.get('/details/:id',(req,res) => {
-            //let restId = Number(req.params.id);
+            //let pharmId = Number(req.params.id);
             let pharmId = mongo.ObjectId(req.params.id)
             db.collection('pharmacy').find({_id:pharmId}).toArray((err,result) => {
                 if(err) throw err;
@@ -141,14 +155,18 @@ const cors = require('cors');
             db.collection('orders').updateOne(
                 {_id:oId},
                 {$set:{
+                    "email":req.body.email,
+                    "address":req.body.address,
                     "status":req.body.status,
-                    "bank_name":req.body.bankName
+                    "bank_name":req.body.bankName,
+                    
                 }},(err,result) => {
                     if(err) throw err
                     res.send(`Status Updated to ${req.body.status}`)
                 }
             )
         })
+          
 
         
     // connect to database
